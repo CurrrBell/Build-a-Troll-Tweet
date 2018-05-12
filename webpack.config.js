@@ -36,33 +36,13 @@ module.exports = {
                     }
                 ]
             }
-            // {
-            //     test: /\.json$/,
-            //     use: ['json-loader']
-            // }
-            // //CSV
-            // {
-            //     test: /\.csv$/,
-            //     loader: 'csv-loader',
-            //     options: {
-            //         dynamicTyping: true,
-            //         header: true,
-            //         skipEmptyLines: true,
-            //         worker: true,
-            //         step: function(row) {
-            //             console.log("Row:", row.data);
-            //         },
-            //         complete: function() {
-            //             console.log("All done!");
-            //         }
-            //     }
-            // }
         ],
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
-        template: './index.html'
+        template: './index.html',
+        inject: false
         //favicon: 'public/favicon.ico'
         })
     ],

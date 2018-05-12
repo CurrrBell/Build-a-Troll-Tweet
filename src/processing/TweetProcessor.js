@@ -1,28 +1,31 @@
 import Tweet from './Tweet';
-//import csv from 'csvtojson';
-//import csv from 'csv-parser';
-//import read from 'file-reader';
-//import fs from 'fs';
-
-//import fs from 'browserify-fs';
 import path from 'path';
-import papa from 'papaparse';
-//import data from "./tweets.json";
-
-
+import Papa from 'papaparse';
 class TweetProcessor{
     
     static getTweetArray(csvData){
         let csvFile = path.join(__dirname,'..','tweets.csv');
+        //let csvFile = '../../tweets.csv';
+        Papa.SCRIPT_PATH = '../node_modules/papaparse/papaparse.js';
 
-        papa.parse(csvFile, {
+        let tweets = [];
+
+        Papa.parse(csvFile, {
             header: true,
             download: true,
             skipEmptyLines: true,
-            complete: function(data){
-                console.log(data);
+            worker: true,
+            step: function(parsedRow){
+                tweets.push(new Tweet(parsedRow.data[0]));
+            },
+            complete: function(){
+                console.log('done');
+                console.log(tweets);
             }
         });
+        
+
+        return tweets;
     }
 
     static processData(csvData){
