@@ -1,14 +1,16 @@
-import Tweet from './Tweet';
 import path from 'path';
 import Papa from 'papaparse';
-class TweetProcessor{
-    
-    static getTweetArray(csvData){
+import {EventEmitter} from "events";
+
+import dispatcher from "../dispatcher";
+import Tweet from './Tweet';
+
+class TweetProcessor{    
+    static async getTweetMap(){
         let csvFile = path.join(__dirname,'..','tweets.csv');
-        //let csvFile = '../../tweets.csv';
         Papa.SCRIPT_PATH = '../node_modules/papaparse/papaparse.js';
 
-        let tweets = [];
+        let tweets = new Map();
 
         Papa.parse(csvFile, {
             header: true,
@@ -16,43 +18,19 @@ class TweetProcessor{
             skipEmptyLines: true,
             worker: true,
             step: function(parsedRow){
-                tweets.push(new Tweet(parsedRow.data[0]));
+                let thisTweet = new Tweet(parsedRow.data[0]);
+                tweets.set(thisTweet.tweetId, thisTweet);
             },
             complete: function(){
-                console.log('done');
-                console.log(tweets);
+                console.log(tweets.size);
+                console.log('done parsing csv');
+                dispatcher.dispatch({
+                    type: "DATA_LOADED",
+                    data: tweets
+                });
             }
         });
-        
-
-        return tweets;
     }
-
-    static processData(csvData){
-        let lines = csvData.split(/\r\n|\n/);
-        let headers = lines[0].split(',');
-        let lineObjects = [];
-
-        for(let i = 1; i < lines.length; i++){
-            let fields = lines[i].split(',');
-
-            if(fields.length === headers.length){
-                let tmp = {};
-
-                for(let j = 0; j < fields.length; j++){
-                    tmp.headers[j] = fields[j];
-                }
-
-                lineObjects.push(tmp);
-            }
-        }
-
-        console.log(lineObjects.length);
-        console.log(lineObjects[0]);
-
-        //return lineObjects;
-    }
-
 }
 
 export default TweetProcessor;

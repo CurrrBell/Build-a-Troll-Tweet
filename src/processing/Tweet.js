@@ -1,5 +1,6 @@
 class Tweet{
     constructor(jsonRow){
+        this.tweetId = jsonRow.tweet_id;
         this.userId = jsonRow.user_id;
         this.createdAt = jsonRow.created_at;
         this.retweeted = this.checkForNull(jsonRow.retweeted, 'boolean');
@@ -12,7 +13,7 @@ class Tweet{
         this.urls = this.checkForNull(jsonRow.expanded_urls);      
     }
 
-    getEngagement(){ 
+    getEngagementScore(){ 
         return this.retweet_count + this.favorite_count;
     }
 
