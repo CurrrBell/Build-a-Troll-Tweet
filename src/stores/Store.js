@@ -1,22 +1,29 @@
-import {EventEmitter} from "events";
+import {EventEmitter} from 'events';
 
-import dispatcher from "../dispatcher";
-
+import dispatcher from '../Dispatcher';
 class Store extends EventEmitter{
     constructor(){
         super();
-        this.data = [];
     }
 
     handleActions(action){
-        if(action.type == "DATA_LOADED"){
-            this.data = action.data;
-            this.emit("change");
+        if(action.type === "DATA_LOADED"){
+            console.log("handleActions() " + action.type);
+            this.tweets = action.data.tweets;
+            this.wordMap = action.data.wordMap;
+            this.emit("loaded");
         }
     }
 
-    getAll(){
-        return this.data;
+    getCurrentWord(){
+        return this.wordMap.currentWord;
+    }
+
+    getChoices(){
+        if(this.wordMap){
+            return this.wordMap.getNextWordChoices(5);
+        }
+        return [];
     }
 }
 

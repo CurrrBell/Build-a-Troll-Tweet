@@ -12,12 +12,12 @@ class WordMap{
 
     constructor(tweets){
         this.tweetStartingWords = [];
-        this.map = this.constructWordMap(tweets);
-        this.currentWord = this.getRandomStartingWord();
+        this.map = new Map();
+        this.currentWord;
     }
 
     getNextWordChoices(choicesDesired){
-        let {nextWords} = map.get(this.currentWord);
+        let {nextWords} = this.map.get(this.currentWord.text);
         let nextWordObjects = [];
 
         nextWords.forEach((key) => {
@@ -31,11 +31,23 @@ class WordMap{
         return nextWordObjects.slice(0, choicesDesired);
     }
 
-    getRandomStartingWord(){        
-        return this.tweetStartingWords[Math.floor(Math.random() * this.tweetStartingWords.length)];
+    getRandomStartingWord(){   
+        console.log('starting words: ' + this.tweetStartingWords.length);     
+        this.currentWord = this.tweetStartingWords[Math.floor(Math.random() * this.tweetStartingWords.length)];
+    }
+
+    mapTweet(tweet){
+        let stringWords = tweet.text.split(" ");
+        let firstWord = this.map.has(stringWords[0]) ? this.map.get(stringWords[0]).word : new Word(stringWords[0], tweet);
+        
+        //TODO: THIS IS WRONG
+        this.tweetStartingWords.push(firstWord);
+        
+        this.addWordsToMap(stringWords, tweet);
     }
 
     constructWordMap(tweets){
+        console.log('constructTweets(): ' + tweets.size);
         tweets.forEach((value, key, map)=>{
             let thisTweet = value;
             let stringWords = thisTweet.text.split(" ");
@@ -44,8 +56,9 @@ class WordMap{
             //TODO: THIS IS WRONG
             this.tweetStartingWords.push(firstWord);
             
-            this.addWordsToMap(stringWords, thisTweet);
+            this.AddWordsToMap(stringWords, thisTweet);
         });
+        console.log('constructTweets(): ' + this.map.keys().length);
     }
 
     addWordsToMap(stringWords, thisTweet) {

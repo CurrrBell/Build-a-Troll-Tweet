@@ -13,6 +13,10 @@ module.exports = {
     devtool: 'eval-source-map',
     module: {        
         rules: [
+            {
+                test: /\.worker\.js$/,
+                use: { loader: 'worker-loader' }
+            },
             // JS 
             {
                 test: /\.(js)$/,
