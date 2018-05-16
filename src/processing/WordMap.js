@@ -16,7 +16,25 @@ class WordMap{
         this.currentWord;
     }
 
-    getNextWordChoices(choicesDesired){
+    setCurrentWord(chosenWord){
+        this.currentWord = this.map.get(chosenWord).word;
+    }
+
+    clearCurrentWord(){
+        this.currentWord = undefined;
+    }
+
+    getFirstWordChoices(choicesDesired = 5){
+        let firstChoices = [];
+
+        for(let i = 0; i < choicesDesired; i++){
+            firstChoices.push(this.getRandomStartingWord());
+        }
+
+        return firstChoices;
+    }
+
+    getNextWordChoices(choicesDesired = 5){
         let {nextWords} = this.map.get(this.currentWord.text);
         let nextWordObjects = [];
 
@@ -28,37 +46,29 @@ class WordMap{
             return word1.getNetEngagementScore() - word2.getNetEngagementScore();
         });
 
+        //we might not have enough choices to give, don't want to go off the edge.
+        if(nextWordObjects.length < choicesDesired){
+            choicesDesired = nextWordObjects.length;
+        }
+
         return nextWordObjects.slice(0, choicesDesired);
     }
 
-    getRandomStartingWord(){   
-        console.log('starting words: ' + this.tweetStartingWords.length);     
-        this.currentWord = this.tweetStartingWords[Math.floor(Math.random() * this.tweetStartingWords.length)];
+    getRandomStartingWord(){      
+        return this.tweetStartingWords[Math.floor(Math.random() * this.tweetStartingWords.length)];
     }
 
     mapTweet(tweet){
         let stringWords = tweet.text.split(" ");
         let firstWord = this.map.has(stringWords[0]) ? this.map.get(stringWords[0]).word : new Word(stringWords[0], tweet);
         
-        //TODO: THIS IS WRONG
-        this.tweetStartingWords.push(firstWord);
+        
+        if(!this.tweetStartingWords.includes(firstWord)) 
+        {
+            this.tweetStartingWords.push(firstWord);
+        }
         
         this.addWordsToMap(stringWords, tweet);
-    }
-
-    constructWordMap(tweets){
-        console.log('constructTweets(): ' + tweets.size);
-        tweets.forEach((value, key, map)=>{
-            let thisTweet = value;
-            let stringWords = thisTweet.text.split(" ");
-            let firstWord = this.map.has(stringWords[0]) ? this.map.get(stringWords[0]).word : new Word(stringWords[0], thisTweet);
-            
-            //TODO: THIS IS WRONG
-            this.tweetStartingWords.push(firstWord);
-            
-            this.AddWordsToMap(stringWords, thisTweet);
-        });
-        console.log('constructTweets(): ' + this.map.keys().length);
     }
 
     addWordsToMap(stringWords, thisTweet) {

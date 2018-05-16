@@ -3,64 +3,67 @@ import TweetProcessor from './processing/TweetProcessor';
 import './App.css';
 import WordMap from './processing/WordMap';
 import Store from "./stores/Store";
+import TweetEditor from './components/TweetEditor';
+import WordChoice from './components/WordChoice';
 
 class App extends Component {
   constructor(){
     super();
-    this.getData = this.getData.bind(this);
+    this.getNewChoices = this.getNewChoices.bind(this);
+    this.chooseWord = this.chooseWord.bind(this);
+    this.startOver = this.startOver.bind(this);
     this.state = {
-      currentWord: "",
+      constructedTweet: "",
       choices: []
     }
   }
 
   componentWillMount(){
-    Store.on("loaded", this.getData);
+    Store.on("loaded", this.getNewChoices);
   }
 
   componentDidMount(){
-    console.log('componentDidMount()');
     TweetProcessor.getTweetMap();    
   }
 
-  getData(){
-    console.log('App.getData() start');
+  chooseWord(e){
+    let word = e.target.innerHTML;
+    let tweetPlusWord = this.state.constructedTweet + ' ' + word;
+
     this.setState({
-      currentWord: Store.getCurrentWord(),
-      choices: Store.getChoices()
+      constructedTweet: tweetPlusWord,
+      choices: Store.chooseWord(word)
     });
-    console.log('App.getData() finish');
+
+    //add chosen word to tweetEditor
+  }
+
+  startOver(){
+    Store.startOver();
+    this.setState({
+      constructedTweet: ""
+    });
+    this.getNewChoices();
   }
 
   getNewChoices(){
     this.setState({
       choices: Store.getChoices()
     });
-    console.log(this.state);
   }
 
   render() {
-    console.log('render()');
     let choices = this.state.choices.map((choice) =>
-      <li key={choice.text}>{choice.text}</li>
+      <WordChoice key={choice.text} word={choice.text} click={this.chooseWord}/>
     );
-
-    console.log(choices);
-    console.log(this.state.choices);
     return (
       <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to {this.state.currentWord.text}.
-          
-        </p>
+        <TweetEditor text={this.state.constructedTweet}/>
         <ul>
           {choices}
         </ul>
 
-        <button onClick={this.getNewChoices.bind(this)}>Get New Choices</button>
+        <button onClick={this.startOver.bind(this)}>Start Over</button>
       </div>
     );
   }

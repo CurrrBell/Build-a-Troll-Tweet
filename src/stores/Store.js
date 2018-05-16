@@ -20,10 +20,25 @@ class Store extends EventEmitter{
     }
 
     getChoices(){
-        if(this.wordMap){
-            return this.wordMap.getNextWordChoices(5);
+        console.log('getChoices()');
+        if(this.wordMap){            
+            if(this.wordMap.currentWord){
+                console.log(this.wordMap.currentWord);
+                return this.wordMap.getNextWordChoices();
+            }
+            return this.wordMap.getFirstWordChoices();
         }
+
         return [];
+    }
+
+    chooseWord(word){
+        this.wordMap.setCurrentWord(word);
+        return this.wordMap.getNextWordChoices();
+    }
+
+    startOver(){
+        this.wordMap.clearCurrentWord();
     }
 }
 
