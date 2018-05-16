@@ -79,8 +79,8 @@ h4{
 
 .CharacterCount{
   position: absolute;
-  bottom:5px;
-  right:5px;
+  bottom:15px;
+  right:20px;
 }
 
 .Choices{
