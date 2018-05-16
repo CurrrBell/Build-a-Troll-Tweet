@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import TweetProcessor from './processing/TweetProcessor';
-import './App.css';
+import styles from './App.css';
 import WordMap from './processing/WordMap';
 import Store from "./stores/Store";
 import TweetEditor from './components/TweetEditor';
 import WordChoice from './components/WordChoice';
+import LoadingOverlay from './components/LoadingOverlay';
 
 class App extends Component {
   constructor(){
@@ -13,6 +14,7 @@ class App extends Component {
     this.chooseWord = this.chooseWord.bind(this);
     this.startOver = this.startOver.bind(this);
     this.state = {
+      loading: true,
       constructedTweet: "",
       choices: []
     }
@@ -48,6 +50,7 @@ class App extends Component {
 
   getNewChoices(){
     this.setState({
+      loading: false,
       choices: Store.getChoices()
     });
   }
@@ -56,14 +59,22 @@ class App extends Component {
     let choices = this.state.choices.map((choice) =>
       <WordChoice key={choice.text} word={choice.text} click={this.chooseWord}/>
     );
-    return (
-      <div className="App">
-        <TweetEditor text={this.state.constructedTweet}/>
-        <ul>
-          {choices}
-        </ul>
 
-        <button onClick={this.startOver.bind(this)}>Start Over</button>
+    let loadingCss = this.state.loading ? styles.Loading : styles.Loaded;
+    console.log(loadingCss);
+    return (
+      <div className={styles.App}>
+        <h1>Build A Troll Tweet</h1>
+        <LoadingOverlay loading={this.state.loading} />
+        <TweetEditor text={this.state.constructedTweet}/>
+        <h4>Choose a word:</h4>
+        <div className={styles.Choices}>
+          {choices}
+        </div>
+        
+        
+
+        <button className={styles.StartOver} onClick={this.startOver.bind(this)}>Start Over</button>
       </div>
     );
   }

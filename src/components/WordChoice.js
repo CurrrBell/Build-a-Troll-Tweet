@@ -1,8 +1,9 @@
 import React from 'react';
+import styles from '../App.css';
 
 const WordChoice = (props) => {
     return(
-        <div onClick={props.click}>{props.word}</div>
+        <span onClick={props.click} className={styles.Choice}>{props.word}</span>
     )
 }
 
